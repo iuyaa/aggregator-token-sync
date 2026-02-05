@@ -30,7 +30,7 @@ jobs:
           body = data.get("body", "")
           token = None
           for line in body.splitlines():
-              if re.search(r"\\|\\s*token\\s*\\|", line, re.IGNORECASE):
+              if re.search(r"\|\s*token\s*\|", line, re.IGNORECASE):
                   match = re.search(r"`([a-zA-Z0-9]+)`", line)
                   if match:
                       token = match.group(1)
