@@ -1,0 +1,65 @@
+name: Update token link
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 */4 * * *"
+
+permissions:
+  contents: write
+
+jobs:
+  update-token:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Fetch token and update link
+        shell: bash
+        run: |
+          set -euo pipefail
+          issue_json=$(curl -s https://api.github.com/repos/wzdnzd/aggregator/issues/91)
+          token=$(ISSUE_JSON="$issue_json" python - <<'PY'
+          import json
+          import os
+          import re
+          import sys
+
+          data = json.loads(os.environ["ISSUE_JSON"])
+          body = data.get("body", "")
+          token = None
+          for line in body.splitlines():
+              if re.search(r"\\|\\s*token\\s*\\|", line, re.IGNORECASE):
+                  match = re.search(r"`([a-zA-Z0-9]+)`", line)
+                  if match:
+                      token = match.group(1)
+                      break
+          if not token:
+              sys.exit("token not found")
+          print(token)
+          PY
+          )
+          url="https://qybndbviblvt.us-west-1.clawcloudrun.com/api/v1/subscribe?token=${token}&target=Clash&list=true"
+          run_at=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+          {
+            echo "# run_at: ${run_at}"
+            echo "# source_url: ${url}"
+            echo "# issue: https://github.com/wzdnzd/aggregator/issues/91"
+            echo ""
+          } > issues_91_latest.yml
+          curl -fsSL "$url" >> issues_91_latest.yml
+
+      - name: Commit changes
+        shell: bash
+        run: |
+          set -euo pipefail
+          if git diff --quiet; then
+            echo "No changes to commit."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add issues_91_latest.yml
+          git commit -m "Update latest token url"
+          git push
