@@ -17,3 +17,12 @@ https://raw.githubusercontent.com/<owner>/<repo>/<branch>/latest_url.txt
 ```
 
 Replace `<owner>`, `<repo>`, and `<branch>` with your repository values.
+
+## Troubleshooting: no "Run workflow" button
+
+If you don't see the **Run workflow** button:
+
+- Click into the **Update token link** workflow (not the **All workflows** list).
+- Make sure the workflow file exists on the repository **default branch**.
+- Check **Settings → Actions → General** and ensure Actions are enabled for the repository.
+- Confirm you have **write** permissions on the repo (required to dispatch workflows and push updates).
