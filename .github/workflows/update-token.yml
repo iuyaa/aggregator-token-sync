@@ -35,7 +35,7 @@ jobs:
                       c for c in re.findall(r"[A-Za-z0-9]{6,}", line) if c.lower() != "token"
                   ]
                   if candidates:
-                      token = max(candidates, key=len)
+                      token = candidates[-1]
                       break
           if not token:
               sys.exit("token not found")
