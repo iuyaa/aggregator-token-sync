@@ -32,8 +32,14 @@ jobs:
           token = None
           for line in body.splitlines():
               if re.search(r"\\|\\s*token\\s*\\|", line, re.IGNORECASE):
+                  details_match = re.search(r"</summary>\\s*([A-Za-z0-9]{6,})", line, re.IGNORECASE)
+                  if details_match:
+                      token = details_match.group(1)
+                      break
                   candidates = [
-                      c for c in re.findall(r"[A-Za-z0-9]{6,}", line) if c.lower() != "token"
+                      c
+                      for c in re.findall(r"[A-Za-z0-9]{6,}", line)
+                      if c.lower() not in {"token", "details", "summary"}
                   ]
                   if candidates:
                       token = candidates[-1]
